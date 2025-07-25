@@ -18,7 +18,7 @@ export const ScottMytravelSite = (): JSX.Element => {
   // Fetch images for the first travel log
   const travelLogId = travelLogs?.[0]?.id;
   const { data: images, isLoading: imagesLoading } = useQuery<TravelImage[]>({
-    queryKey: ['/api/travel-logs', travelLogId, 'images'],
+    queryKey: [`/api/travel-logs/${travelLogId}/images`],
     enabled: !!travelLogId,
   });
 
@@ -31,6 +31,7 @@ export const ScottMytravelSite = (): JSX.Element => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/travel-logs'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/travel-logs/${travelLogId}/images`] });
     },
   });
 
@@ -43,13 +44,6 @@ export const ScottMytravelSite = (): JSX.Element => {
 
   const currentTravelLog = travelLogs?.[0];
   const sortedImages = images?.sort((a, b) => a.orderIndex - b.orderIndex) || [];
-  
-  // Debug logging
-  console.log('Travel logs:', travelLogs);
-  console.log('Images:', images);
-  console.log('Sorted images:', sortedImages);
-  console.log('Current image index:', currentImageIndex);
-  console.log('Current story:', sortedImages[currentImageIndex]?.story);
 
   const handleImageTap = () => {
     if (sortedImages.length > 0) {
