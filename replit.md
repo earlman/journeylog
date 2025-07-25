@@ -5,11 +5,11 @@ This is a travel log application migrated from Figma to Replit. It displays a mo
 
 ## Project Architecture
 - **Frontend**: React with TypeScript, using Wouter for routing
-- **Backend**: Express.js server with in-memory storage 
+- **Backend**: Express.js server with PostgreSQL database
+- **Database**: PostgreSQL with Drizzle ORM for type-safe database operations
 - **Styling**: Tailwind CSS with custom fonts (Tungsten, Inconsolata)
 - **UI Components**: Radix UI components via shadcn/ui
 - **Build Tool**: Vite for development and bundling
-- **Database**: Currently using in-memory storage (MemStorage)
 
 ## Features
 - Mobile-first travel log interface
@@ -20,7 +20,11 @@ This is a travel log application migrated from Figma to Replit. It displays a mo
 
 ## Recent Changes
 - December 25, 2024: Migrated from Figma to Replit environment
-- Verified all dependencies are properly installed
+- Added PostgreSQL database with travel logs, travel images, and users tables
+- Implemented database storage layer replacing in-memory storage
+- Created API endpoints for managing travel logs and images
+- Added automatic database seeding functionality
+- Enhanced story-like image slider with database-driven content
 - Application server running on port 5000 with proper client/server separation
 
 ## User Preferences

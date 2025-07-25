@@ -1,54 +1,87 @@
 import { ArrowLeftIcon, ShareIcon } from "lucide-react";
 import React, { useState, useEffect } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { type TravelLog, type TravelImage } from "@shared/schema";
 
 export const ScottMytravelSite = (): JSX.Element => {
-  // Image data for the story slider
-  const images = [
-    {
-      src: "/figmaAssets/image-9.png",
-      story: "Arrived in Manila - the chaos begins! The heat hits you like a wall when you step off the plane."
-    },
-    {
-      src: "/figmaAssets/image-9.png", // Using same image for now - you can add more images
-      story: "Exploring the bustling streets of Manila. Jeepneys everywhere and the energy is incredible."
-    },
-    {
-      src: "/figmaAssets/image-9.png",
-      story: "Made it to Palawan! Crystal clear waters and limestone cliffs that take your breath away."
-    },
-    {
-      src: "/figmaAssets/image-9.png",
-      story: "Island hopping day - discovered hidden lagoons and snorkeled with tropical fish."
-    }
-  ];
-
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+  // Fetch travel logs
+  const { data: travelLogs, isLoading: logsLoading } = useQuery<TravelLog[]>({
+    queryKey: ['/api/travel-logs'],
+  });
+
+  // Fetch images for the first travel log
+  const travelLogId = travelLogs?.[0]?.id;
+  const { data: images, isLoading: imagesLoading } = useQuery<TravelImage[]>({
+    queryKey: ['/api/travel-logs', travelLogId, 'images'],
+    enabled: !!travelLogId,
+  });
+
+  // Seed database mutation
+  const seedMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/seed', { method: 'POST' });
+      if (!response.ok) throw new Error('Failed to seed database');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/travel-logs'] });
+    },
+  });
+
+  // Auto-seed if no data exists
+  useEffect(() => {
+    if (!logsLoading && (!travelLogs || travelLogs.length === 0)) {
+      seedMutation.mutate();
+    }
+  }, [travelLogs, logsLoading, seedMutation]);
+
+  const currentTravelLog = travelLogs?.[0];
+  const sortedImages = images?.sort((a, b) => a.orderIndex - b.orderIndex) || [];
+
   const handleImageTap = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    if (sortedImages.length > 0) {
+      setCurrentImageIndex((prev) => (prev + 1) % sortedImages.length);
+    }
   };
 
   // Add keyboard navigation
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
+      if (sortedImages.length === 0) return;
+      
       if (event.key === 'ArrowRight' || event.key === ' ') {
         event.preventDefault();
         handleImageTap();
       } else if (event.key === 'ArrowLeft') {
         event.preventDefault();
-        setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+        setCurrentImageIndex((prev) => (prev - 1 + sortedImages.length) % sortedImages.length);
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [images.length]);
+  }, [sortedImages.length]);
+
+  const isLoading = logsLoading || imagesLoading || seedMutation.isPending;
+
+  if (isLoading) {
+    return (
+      <div className="bg-[#263240] flex flex-row justify-center w-full min-h-screen items-center">
+        <div className="text-white [font-family:'Inconsolata',Helvetica] font-normal text-lg">
+          Loading travel log...
+        </div>
+      </div>
+    );
+  }
 
   // Generate slider indicators based on current image
-  const sliderIndicators = images.map((_, index) => ({
+  const sliderIndicators = sortedImages.map((_, index) => ({
     active: index === currentImageIndex,
     className: index === currentImageIndex ? "bg-[#484848]" : "bg-[#d9d9d9] opacity-50"
   }));
@@ -64,7 +97,7 @@ export const ScottMytravelSite = (): JSX.Element => {
   const tipItems = [
     'Time is fluid. If someone says "2 PM," expect 3 or 4.',
     "Cash is king. ATMs aren't always reliable.",
-    "Learn a few Tagalog phrases—locals love it.",
+    "Learn a few Tagalog phrases—locals love it",
     "I left with a full stomach, a lighter wallet, and a deep love for the beautiful mess that is the Philippines. Would I go back? Absolutely.",
   ];
 
@@ -76,7 +109,7 @@ export const ScottMytravelSite = (): JSX.Element => {
           className="absolute w-[393px] h-[637px] top-0 left-0 overflow-hidden cursor-pointer transition-all duration-300"
           onClick={handleImageTap}
           style={{
-            backgroundImage: `url(${images[currentImageIndex].src})`,
+            backgroundImage: `url(${sortedImages[currentImageIndex]?.imageUrl || '/figmaAssets/image-9.png'})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center'
           }}
@@ -84,14 +117,14 @@ export const ScottMytravelSite = (): JSX.Element => {
           {/* Story overlay */}
           <div className="absolute bottom-20 left-4 right-4 bg-black/50 rounded-lg p-3 backdrop-blur-sm">
             <div className="[font-family:'Inconsolata',Helvetica] font-normal text-white text-sm tracking-[0] leading-[18px]">
-              {images[currentImageIndex].story}
+              {sortedImages[currentImageIndex]?.story || 'Loading story...'}
             </div>
           </div>
 
           <div className="relative w-[399px] h-[26px] top-[611px]">
             <div className="absolute w-[232px] h-4 top-0 left-[85px]">
               <div className="absolute w-[230px] h-4 top-0 left-0 [font-family:'Inconsolata',Helvetica] font-normal text-white text-base text-center tracking-[0] leading-[22.4px] whitespace-nowrap">
-                tap for next image! ({currentImageIndex + 1}/{images.length})
+                tap for next image! ({currentImageIndex + 1}/{sortedImages.length})
               </div>
             </div>
 
@@ -131,15 +164,15 @@ export const ScottMytravelSite = (): JSX.Element => {
               {/* Header section */}
               <div className="relative w-[355px] h-[77px] mr-[-6.00px]">
                 <div className="absolute w-[269px] top-[29px] left-0 [font-family:'Tungsten-Medium',Helvetica] font-medium text-[#dedede] text-[40px] tracking-[0] leading-[normal]">
-                  PHILIPPINES
+                  {currentTravelLog?.destination || 'PHILIPPINES'}
                 </div>
 
                 <div className="absolute w-[75px] top-0 left-0 [font-family:'Tungsten-Medium',Helvetica] font-medium text-white text-2xl tracking-[0] leading-[normal]">
-                  TRAVEL LOG
+                  {currentTravelLog?.title || 'TRAVEL LOG'}
                 </div>
 
                 <div className="absolute top-0 left-[282px] [font-family:'Tungsten-Medium',Helvetica] font-medium text-white text-2xl text-right tracking-[0] leading-[normal]">
-                  JUNE 2023
+                  {currentTravelLog?.date || 'JUNE 2023'}
                 </div>
               </div>
 
@@ -149,9 +182,7 @@ export const ScottMytravelSite = (): JSX.Element => {
               </div>
 
               <div className="relative self-stretch [font-family:'Inconsolata',Helvetica] font-normal text-white text-base tracking-[0] leading-[22.4px]">
-                Just got back from the Philippines, and wow—what a ride. The
-                heat, the chaos, the food. I went with a plan, but the country
-                had other ideas.
+                {currentTravelLog?.description || 'Just got back from the Philippines, and wow—what a ride. The heat, the chaos, the food. I went with a plan, but the country had other ideas.'}
               </div>
 
               <Separator className="w-5 h-5 bg-[#263240] border-0" />
