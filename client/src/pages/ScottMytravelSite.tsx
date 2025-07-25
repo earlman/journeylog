@@ -43,6 +43,13 @@ export const ScottMytravelSite = (): JSX.Element => {
 
   const currentTravelLog = travelLogs?.[0];
   const sortedImages = images?.sort((a, b) => a.orderIndex - b.orderIndex) || [];
+  
+  // Debug logging
+  console.log('Travel logs:', travelLogs);
+  console.log('Images:', images);
+  console.log('Sorted images:', sortedImages);
+  console.log('Current image index:', currentImageIndex);
+  console.log('Current story:', sortedImages[currentImageIndex]?.story);
 
   const handleImageTap = () => {
     if (sortedImages.length > 0) {
