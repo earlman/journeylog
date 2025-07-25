@@ -39,7 +39,7 @@ export const ScottMytravelSite = (): JSX.Element => {
     if (!logsLoading && (!travelLogs || travelLogs.length === 0)) {
       seedMutation.mutate();
     }
-  }, [travelLogs, logsLoading, seedMutation]);
+  }, [travelLogs, logsLoading]);
 
   const currentTravelLog = travelLogs?.[0];
   const sortedImages = images?.sort((a, b) => a.orderIndex - b.orderIndex) || [];
@@ -70,6 +70,12 @@ export const ScottMytravelSite = (): JSX.Element => {
 
   const isLoading = logsLoading || imagesLoading || seedMutation.isPending;
 
+  // Generate slider indicators based on current image
+  const sliderIndicators = sortedImages.map((_, index) => ({
+    active: index === currentImageIndex,
+    className: index === currentImageIndex ? "bg-[#484848]" : "bg-[#d9d9d9] opacity-50"
+  }));
+
   if (isLoading) {
     return (
       <div className="bg-[#263240] flex flex-row justify-center w-full min-h-screen items-center">
@@ -79,12 +85,6 @@ export const ScottMytravelSite = (): JSX.Element => {
       </div>
     );
   }
-
-  // Generate slider indicators based on current image
-  const sliderIndicators = sortedImages.map((_, index) => ({
-    active: index === currentImageIndex,
-    className: index === currentImageIndex ? "bg-[#484848]" : "bg-[#d9d9d9] opacity-50"
-  }));
 
   // Data for the checkpoints and budget section
   const checkpointItems = [
