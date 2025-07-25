@@ -1,17 +1,57 @@
 import { ArrowLeftIcon, ShareIcon } from "lucide-react";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
 export const ScottMytravelSite = (): JSX.Element => {
-  // Data for the image slider indicators
-  const sliderIndicators = [
-    { active: true, className: "bg-[#484848]" },
-    { active: false, className: "bg-[#d9d9d9] opacity-50" },
-    { active: false, className: "bg-[#d9d9d9] opacity-50" },
-    { active: false, className: "bg-[#d9d9d9] opacity-50" },
+  // Image data for the story slider
+  const images = [
+    {
+      src: "/figmaAssets/image-9.png",
+      story: "Arrived in Manila - the chaos begins! The heat hits you like a wall when you step off the plane."
+    },
+    {
+      src: "/figmaAssets/image-9.png", // Using same image for now - you can add more images
+      story: "Exploring the bustling streets of Manila. Jeepneys everywhere and the energy is incredible."
+    },
+    {
+      src: "/figmaAssets/image-9.png",
+      story: "Made it to Palawan! Crystal clear waters and limestone cliffs that take your breath away."
+    },
+    {
+      src: "/figmaAssets/image-9.png",
+      story: "Island hopping day - discovered hidden lagoons and snorkeled with tropical fish."
+    }
   ];
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const handleImageTap = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % images.length);
+  };
+
+  // Add keyboard navigation
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowRight' || event.key === ' ') {
+        event.preventDefault();
+        handleImageTap();
+      } else if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [images.length]);
+
+  // Generate slider indicators based on current image
+  const sliderIndicators = images.map((_, index) => ({
+    active: index === currentImageIndex,
+    className: index === currentImageIndex ? "bg-[#484848]" : "bg-[#d9d9d9] opacity-50"
+  }));
 
   // Data for the checkpoints and budget section
   const checkpointItems = [
@@ -32,11 +72,26 @@ export const ScottMytravelSite = (): JSX.Element => {
     <div className="bg-[#263240] flex flex-row justify-center w-full">
       <div className="bg-[#263240] w-[393px] h-[1731px] relative">
         {/* Hero image section */}
-        <div className="absolute w-[393px] h-[637px] top-0 left-0 overflow-hidden bg-[url(/figmaAssets/image-9.png)] bg-[100%_100%]">
+        <div 
+          className="absolute w-[393px] h-[637px] top-0 left-0 overflow-hidden cursor-pointer transition-all duration-300"
+          onClick={handleImageTap}
+          style={{
+            backgroundImage: `url(${images[currentImageIndex].src})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        >
+          {/* Story overlay */}
+          <div className="absolute bottom-20 left-4 right-4 bg-black/50 rounded-lg p-3 backdrop-blur-sm">
+            <div className="[font-family:'Inconsolata',Helvetica] font-normal text-white text-sm tracking-[0] leading-[18px]">
+              {images[currentImageIndex].story}
+            </div>
+          </div>
+
           <div className="relative w-[399px] h-[26px] top-[611px]">
             <div className="absolute w-[232px] h-4 top-0 left-[85px]">
               <div className="absolute w-[230px] h-4 top-0 left-0 [font-family:'Inconsolata',Helvetica] font-normal text-white text-base text-center tracking-[0] leading-[22.4px] whitespace-nowrap">
-                tap for next image!
+                tap for next image! ({currentImageIndex + 1}/{images.length})
               </div>
             </div>
 
@@ -49,7 +104,7 @@ export const ScottMytravelSite = (): JSX.Element => {
                   {sliderIndicators.map((indicator, index) => (
                     <div
                       key={`indicator-${index}`}
-                      className={`w-[98px] h-[3px] ${indicator.className}`}
+                      className={`w-[98px] h-[3px] transition-all duration-300 ${indicator.className}`}
                     />
                   ))}
                 </div>
