@@ -61,10 +61,10 @@ export const HomeScreen = (): JSX.Element => {
     // Create chart
     const chart = root.container.children.push(
       am5map.MapChart.new(root, {
-        panX: "none",
-        panY: "none",
-        wheelX: "none",
-        wheelY: "none",
+        panX: "translateX",
+        panY: "translateY",
+        wheelX: "panX",
+        wheelY: "panY",
         projection: am5map.geoMercator(),
         paddingTop: 20,
         paddingRight: 20,
@@ -106,8 +106,11 @@ export const HomeScreen = (): JSX.Element => {
     });
 
     // Focus on Southeast Asia region
-    chart.set("zoomLevel", 3);
-    chart.zoomToGeoPoint({ longitude: 120, latitude: 10 }, 3);
+    chart.set("zoomLevel", 2);
+    chart.goHome(0);
+    
+    // Add zoom controls
+    chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
 
     return () => {
       root.dispose();
