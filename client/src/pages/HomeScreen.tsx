@@ -104,9 +104,12 @@ export const HomeScreen = (): JSX.Element => {
 
     worldSeries.mapPolygons.template.adapters.add("fill", (fill, target) => {
       const dataItem = target.dataItem;
-      const countryId = dataItem?.get("id") as string;
-      if (countryId && visitedCountries.includes(countryId)) {
-        return am5.color("#f9e897");
+      if (dataItem) {
+        const countryData = dataItem.dataContext as any;
+        const countryId = countryData?.id as string;
+        if (countryId && visitedCountries.includes(countryId)) {
+          return am5.color("#f9e897");
+        }
       }
       return fill;
     });
@@ -120,17 +123,20 @@ export const HomeScreen = (): JSX.Element => {
 
 
     // Add click functionality to navigate to country pages
-    worldSeries.mapPolygons.template.on("click", (ev) => {
+    worldSeries.mapPolygons.template.events.on("click", (ev) => {
       const dataItem = ev.target.dataItem;
-      const countryId = dataItem?.get("id") as string;
-      const countryName = dataItem?.get("name") as string;
-      console.log("Clicked country ID:", countryId); // Debug log
-      console.log("Clicked country name:", countryName); // Debug log
-      console.log("Available routes:", Object.keys(countryRoutes)); // Debug log
-      
-      if (countryId && countryRoutes[countryId]) {
-        console.log("Navigating to:", countryRoutes[countryId]); // Debug log
-        setLocation(countryRoutes[countryId]);
+      if (dataItem) {
+        const countryData = dataItem.dataContext as any;
+        const countryId = countryData?.id as string;
+        const countryName = countryData?.name as string;
+        console.log("Clicked country ID:", countryId); // Debug log
+        console.log("Clicked country name:", countryName); // Debug log
+        console.log("Available routes:", Object.keys(countryRoutes)); // Debug log
+        
+        if (countryId && countryRoutes[countryId]) {
+          console.log("Navigating to:", countryRoutes[countryId]); // Debug log
+          setLocation(countryRoutes[countryId]);
+        }
       }
     });
 
