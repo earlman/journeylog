@@ -44,6 +44,13 @@ export const ScottMytravelSite = (): JSX.Element => {
 
   const currentTravelLog = travelLogs?.[0];
   const sortedImages = images?.sort((a, b) => a.orderIndex - b.orderIndex) || [];
+  
+  // Debug current state
+  console.log('Current travel log:', currentTravelLog);
+  console.log('All images:', images);
+  console.log('Sorted images:', sortedImages);
+  console.log('Current index:', currentImageIndex);
+  console.log('Current image:', sortedImages[currentImageIndex]);
 
   // Function to get image style with filters
   const getImageStyle = (imageUrl: string) => {
@@ -82,8 +89,11 @@ export const ScottMytravelSite = (): JSX.Element => {
   };
 
   const handleImageTap = () => {
+    console.log('Image tapped! Current index:', currentImageIndex, 'Images length:', sortedImages.length);
     if (sortedImages.length > 0) {
-      setCurrentImageIndex((prev) => (prev + 1) % sortedImages.length);
+      const newIndex = (currentImageIndex + 1) % sortedImages.length;
+      console.log('Setting new index:', newIndex);
+      setCurrentImageIndex(newIndex);
     }
   };
 
