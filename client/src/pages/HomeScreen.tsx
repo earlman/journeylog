@@ -119,9 +119,12 @@ export const HomeScreen = (): JSX.Element => {
     worldSeries.mapPolygons.template.on("click", (ev) => {
       const dataItem = ev.target.dataItem;
       const countryName = dataItem?.get("name") as string;
+      console.log("Clicked country:", countryName); // Debug log
+      console.log("Available routes:", Object.keys(countryRoutes)); // Debug log
+      
       if (countryName && countryRoutes[countryName]) {
-        // Use window.location to navigate since we're in useLayoutEffect
-        window.location.href = countryRoutes[countryName];
+        console.log("Navigating to:", countryRoutes[countryName]); // Debug log
+        setLocation(countryRoutes[countryName]);
       }
     });
 
