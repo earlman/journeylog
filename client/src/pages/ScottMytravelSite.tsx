@@ -45,6 +45,42 @@ export const ScottMytravelSite = (): JSX.Element => {
   const currentTravelLog = travelLogs?.[0];
   const sortedImages = images?.sort((a, b) => a.orderIndex - b.orderIndex) || [];
 
+  // Function to get image style with filters
+  const getImageStyle = (imageUrl: string) => {
+    const baseImageUrl = imageUrl.split('?')[0];
+    const urlParams = new URLSearchParams(imageUrl.split('?')[1] || '');
+    const filter = urlParams.get('filter');
+    
+    let additionalStyles = {};
+    
+    switch (filter) {
+      case 'warm':
+        additionalStyles = {
+          filter: 'sepia(0.3) saturate(1.2) hue-rotate(10deg)'
+        };
+        break;
+      case 'cool':
+        additionalStyles = {
+          filter: 'saturate(1.1) hue-rotate(200deg) contrast(1.1)'
+        };
+        break;
+      case 'bright':
+        additionalStyles = {
+          filter: 'brightness(1.2) contrast(1.1) saturate(1.3)'
+        };
+        break;
+      default:
+        additionalStyles = {};
+    }
+    
+    return {
+      backgroundImage: `url(${baseImageUrl})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      ...additionalStyles
+    };
+  };
+
   const handleImageTap = () => {
     if (sortedImages.length > 0) {
       setCurrentImageIndex((prev) => (prev + 1) % sortedImages.length);
@@ -107,13 +143,9 @@ export const ScottMytravelSite = (): JSX.Element => {
       <div className="bg-[#263240] w-[393px] h-[1731px] relative">
         {/* Hero image section */}
         <div 
-          className="absolute w-[393px] h-[637px] top-0 left-0 overflow-hidden cursor-pointer transition-all duration-300"
+          className="absolute w-[393px] h-[637px] top-0 left-0 overflow-hidden cursor-pointer transition-all duration-500"
           onClick={handleImageTap}
-          style={{
-            backgroundImage: `url(${sortedImages[currentImageIndex]?.imageUrl || '/figmaAssets/image-9.png'})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-          }}
+          style={getImageStyle(sortedImages[currentImageIndex]?.imageUrl || '/figmaAssets/image-9.png')}
         >
           {/* Story overlay */}
           <div className="absolute bottom-20 left-4 right-4 bg-black/50 rounded-lg p-3 backdrop-blur-sm">

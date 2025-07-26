@@ -87,7 +87,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         description: "Just got back from the Philippines, and wow—what a ride. The heat, the chaos, the food. I went with a plan, but the country had other ideas."
       });
 
-      // Create travel images
+      // Create travel images with different visual effects
       const images = [
         {
           travelLogId: travelLog.id,
@@ -97,19 +97,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         {
           travelLogId: travelLog.id,
-          imageUrl: "/figmaAssets/image-9.png",
+          imageUrl: "/figmaAssets/image-9.png?filter=warm",
           story: "Exploring the bustling streets of Manila. Jeepneys everywhere and the energy is incredible.",
           orderIndex: 1
         },
         {
           travelLogId: travelLog.id,
-          imageUrl: "/figmaAssets/image-9.png",
+          imageUrl: "/figmaAssets/image-9.png?filter=cool",
           story: "Made it to Palawan! Crystal clear waters and limestone cliffs that take your breath away.",
           orderIndex: 2
         },
         {
           travelLogId: travelLog.id,
-          imageUrl: "/figmaAssets/image-9.png",
+          imageUrl: "/figmaAssets/image-9.png?filter=bright",
           story: "Island hopping day - discovered hidden lagoons and snorkeled with tropical fish.",
           orderIndex: 3
         }
