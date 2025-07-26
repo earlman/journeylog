@@ -12,10 +12,12 @@ This is a travel log application migrated from Figma to Replit. It displays a mo
 - **Build Tool**: Vite for development and bundling
 
 ## Features
-- Mobile-first travel log interface
-- Image slider with navigation indicators
+- Interactive homescreen with amcharts world map focused on Southeast Asia
+- Country selection cards with visited status indicators
+- Mobile-first travel log interface with story-like image slider
+- Dynamic image filters (normal, warm, cool, bright effects)
 - Travel highlights, budget tips, and advice sections
-- Share functionality
+- Navigation between homescreen and travel logs
 - Dark theme design with custom color scheme
 
 ## Recent Changes
@@ -24,7 +26,10 @@ This is a travel log application migrated from Figma to Replit. It displays a mo
 - Implemented database storage layer replacing in-memory storage
 - Created API endpoints for managing travel logs and images
 - Added automatic database seeding functionality
-- Enhanced story-like image slider with database-driven content
+- Enhanced story-like image slider with database-driven content and visual filters
+- July 26, 2025: Created interactive homescreen with amcharts world map
+- Added country selection grid with visit status tracking
+- Implemented routing between homescreen and travel log pages
 - Application server running on port 5000 with proper client/server separation
 
 ## User Preferences

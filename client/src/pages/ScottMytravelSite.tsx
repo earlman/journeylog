@@ -5,6 +5,7 @@ import { queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Link } from "wouter";
 import { type TravelLog, type TravelImage } from "@shared/schema";
 
 export const ScottMytravelSite = (): JSX.Element => {
@@ -184,15 +185,17 @@ export const ScottMytravelSite = (): JSX.Element => {
           <CardContent className="p-0">
             <div className="flex flex-col w-[349px] items-start gap-2.5">
               {/* Return to homescreen button */}
-              <Button
-                variant="ghost"
-                className="h-[31px] p-0 gap-3 text-[#f9e897] hover:text-[#f9e897] hover:bg-[#263240]/10"
-              >
-                <ArrowLeftIcon className="w-6 h-6" />
-                <span className="[font-family:'Inconsolata',Helvetica] font-normal text-base tracking-[0] leading-[22.4px] whitespace-nowrap">
-                  return to homescreen
-                </span>
-              </Button>
+              <Link to="/">
+                <Button
+                  variant="ghost"
+                  className="h-[31px] p-0 gap-3 text-[#f9e897] hover:text-[#f9e897] hover:bg-[#263240]/10"
+                >
+                  <ArrowLeftIcon className="w-6 h-6" />
+                  <span className="[font-family:'Inconsolata',Helvetica] font-normal text-base tracking-[0] leading-[22.4px] whitespace-nowrap">
+                    return to homescreen
+                  </span>
+                </Button>
+              </Link>
 
               {/* Header section */}
               <div className="relative w-[355px] h-[77px] mr-[-6.00px]">
