@@ -4,7 +4,7 @@ import * as am5map from "@amcharts/amcharts5/map";
 import am5themes_Dark from "@amcharts/amcharts5/themes/Dark";
 import am5geodata_worldLow from "@amcharts/amcharts5-geodata/worldLow";
 import { Card } from "@/components/ui/card";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 
 interface CountryCard {
   id: string;
@@ -48,6 +48,7 @@ const countries: CountryCard[] = [
 
 export const HomeScreen = (): JSX.Element => {
   const mapRef = useRef<HTMLDivElement>(null);
+  const [, setLocation] = useLocation();
 
   useLayoutEffect(() => {
     if (!mapRef.current) return;
@@ -63,8 +64,8 @@ export const HomeScreen = (): JSX.Element => {
       am5map.MapChart.new(root, {
         panX: "translateX",
         panY: "translateY",
-        wheelX: "panX",
-        wheelY: "panY",
+        wheelX: "zoom",
+        wheelY: "zoom",
         projection: am5map.geoMercator(),
         paddingTop: 20,
         paddingRight: 20,
@@ -90,10 +91,19 @@ export const HomeScreen = (): JSX.Element => {
     });
 
     // Highlight visited countries
-    const visitedCountries = ["PH"]; // Philippines ISO code
+    const visitedCountries = ["Philippines"]; // Country names for visited places
+    const countryRoutes: { [key: string]: string } = {
+      "Philippines": "/travel-log",
+      "Vietnam": "/vietnam",
+      "Japan": "/japan", 
+      "Singapore": "/singapore",
+      "Thailand": "/thailand"
+    };
+
     worldSeries.mapPolygons.template.adapters.add("fill", (fill, target) => {
       const dataItem = target.dataItem;
-      if (dataItem && visitedCountries.includes(dataItem.get("name") as string)) {
+      const countryName = dataItem?.get("name") as string;
+      if (countryName && visitedCountries.includes(countryName)) {
         return am5.color("#f9e897");
       }
       return fill;
@@ -103,6 +113,16 @@ export const HomeScreen = (): JSX.Element => {
     worldSeries.mapPolygons.template.states.create("hover", {
       fill: am5.color("#f9e897"),
       opacity: 0.8
+    });
+
+    // Add click functionality to navigate to country pages
+    worldSeries.mapPolygons.template.on("click", (ev) => {
+      const dataItem = ev.target.dataItem;
+      const countryName = dataItem?.get("name") as string;
+      if (countryName && countryRoutes[countryName]) {
+        // Use window.location to navigate since we're in useLayoutEffect
+        window.location.href = countryRoutes[countryName];
+      }
     });
 
     // Focus on Southeast Asia region
