@@ -87,23 +87,25 @@ export const HomeScreen = (): JSX.Element => {
       fill: am5.color("#404040"),
       stroke: am5.color("#263240"),
       strokeWidth: 1,
-      tooltipText: "{name}"
+      tooltipText: "{name}",
+      interactive: true,
+      cursorOverStyle: "pointer"
     });
 
-    // Highlight visited countries
-    const visitedCountries = ["Philippines"]; // Country names for visited places
+    // Highlight visited countries using ISO codes
+    const visitedCountries = ["PH"]; // Philippines ISO code
     const countryRoutes: { [key: string]: string } = {
-      "Philippines": "/travel-log",
-      "Vietnam": "/vietnam",
-      "Japan": "/japan", 
-      "Singapore": "/singapore",
-      "Thailand": "/thailand"
+      "PH": "/travel-log",
+      "VN": "/vietnam",
+      "JP": "/japan", 
+      "SG": "/singapore",
+      "TH": "/thailand"
     };
 
     worldSeries.mapPolygons.template.adapters.add("fill", (fill, target) => {
       const dataItem = target.dataItem;
-      const countryName = dataItem?.get("name") as string;
-      if (countryName && visitedCountries.includes(countryName)) {
+      const countryId = dataItem?.get("id") as string;
+      if (countryId && visitedCountries.includes(countryId)) {
         return am5.color("#f9e897");
       }
       return fill;
@@ -115,16 +117,20 @@ export const HomeScreen = (): JSX.Element => {
       opacity: 0.8
     });
 
+
+
     // Add click functionality to navigate to country pages
     worldSeries.mapPolygons.template.on("click", (ev) => {
       const dataItem = ev.target.dataItem;
+      const countryId = dataItem?.get("id") as string;
       const countryName = dataItem?.get("name") as string;
-      console.log("Clicked country:", countryName); // Debug log
+      console.log("Clicked country ID:", countryId); // Debug log
+      console.log("Clicked country name:", countryName); // Debug log
       console.log("Available routes:", Object.keys(countryRoutes)); // Debug log
       
-      if (countryName && countryRoutes[countryName]) {
-        console.log("Navigating to:", countryRoutes[countryName]); // Debug log
-        setLocation(countryRoutes[countryName]);
+      if (countryId && countryRoutes[countryId]) {
+        console.log("Navigating to:", countryRoutes[countryId]); // Debug log
+        setLocation(countryRoutes[countryId]);
       }
     });
 
